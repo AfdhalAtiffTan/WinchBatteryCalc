@@ -65,7 +65,10 @@ class StartQT4(QtGui.QMainWindow):
         self.ui.lineEdit_15.setText(str(runtime_hour))
         
         cable_stress = shaft_torque / (spoolDiam/2)
-        statmsg = "Cable stress = " + str(cable_stress) + "N" 
+        statmsg = 	"Cable stress = " + str(round(cable_stress,2)) + "N/m^2 # "  + \
+			"Distance travelled/minute = " + str(round(travel_speed*1000.0/60.0, 2)) + "m # " + \
+			"Cable Force = " + str(round(cable_stress/9.80665, 2)) + "kg # " + \
+			"Total distance travelled with the battery = " + str(round(travel_speed*runtime_hour, 2)) + "km"
         self.ui.statusbar.showMessage(statmsg)
 		
 	
