@@ -23,6 +23,7 @@ class StartQT4(QtGui.QMainWindow):
         PWM_DC = float(self.ui.lineEdit_8.text())
         batt_Ah = float(self.ui.lineEdit_9.text())
         torque_load = float(self.ui.lineEdit_10.text())
+        gear_ratio = float(self.ui.lineEdit_21.text())
 
         #v/rpm
         bemf_const = (Vnom - (motor_ESR*NL_Curr))/NL_RPM
@@ -34,41 +35,41 @@ class StartQT4(QtGui.QMainWindow):
         
         effective_voltage = inputVolt*PWM_DC/100.0
         self.ui.lineEdit_13.setText(str(effective_voltage))
-        
+
         max_torque = stallTorque*effective_voltage/Vnom
-        self.ui.lineEdit_11.setText(str(max_torque))
-        
+        self.ui.lineEdit_11.setText(str(max_torque*gear_ratio))
+
         shaft_torque = max_torque*torque_load/100.0
-        self.ui.lineEdit_12.setText(str(shaft_torque))
-        
+        self.ui.lineEdit_12.setText(str(shaft_torque*gear_ratio))
+
         #help! this need fixing
-        shaft_rpm = (motor_kv*effective_voltage) - (NL_RPM/stallTorque)*shaft_torque                                
-        self.ui.lineEdit_19.setText(str(shaft_rpm))
-        
+        shaft_rpm = (motor_kv*effective_voltage) - (NL_RPM/stallTorque)*shaft_torque   
+        self.ui.lineEdit_19.setText(str(shaft_rpm/gear_ratio))
+
         travel_speed = shaft_rpm * 60.0 * 2.0 * 3.14159265359 * spoolDiam /1000.0
-        self.ui.lineEdit_20.setText(str(travel_speed))
-        
+        self.ui.lineEdit_20.setText(str(travel_speed/gear_ratio))
+
         #current eqn
         i_mot = (effective_voltage - (bemf_const*shaft_rpm)) / motor_ESR
         self.ui.lineEdit_14.setText(str(i_mot))            
-        
+
         power_in = effective_voltage*i_mot
         self.ui.lineEdit_16.setText(str(power_in))
-        
+
         power_out = shaft_torque*shaft_rpm/60.0*2.0*3.14159265359
         self.ui.lineEdit_17.setText(str(power_out))
-        
+
         efficiency = power_out/power_in*100
         self.ui.lineEdit_18.setText(str(efficiency))
 
         runtime_hour = (inputVolt*batt_Ah) / (effective_voltage * i_mot)
         self.ui.lineEdit_15.setText(str(runtime_hour))
         
-        cable_stress = shaft_torque / (spoolDiam/2)
+        cable_stress = shaft_torque*gear_ratio / (spoolDiam/2)
         statmsg = 	"Cable stress = " + str(round(cable_stress,2)) + "N/m^2 # "  + \
-			"Distance travelled/minute = " + str(round(travel_speed*1000.0/60.0, 2)) + "m # " + \
+			"Distance travelled/minute = " + str(round(travel_speed*1000.0/60.0/gear_ratio, 2)) + "m # " + \
 			"Cable Force = " + str(round(cable_stress/9.80665, 2)) + "kg # " + \
-			"Total distance travelled with the battery = " + str(round(travel_speed*runtime_hour, 2)) + "km"
+			"Total distance travelled with the battery = " + str(round(travel_speed*runtime_hour/gear_ratio, 2)) + "km"
         self.ui.statusbar.showMessage(statmsg)
 		
 	

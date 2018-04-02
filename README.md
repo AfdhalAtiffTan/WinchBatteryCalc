@@ -8,3 +8,5 @@
 * Made using PyQt4
 * Converted into exe using PyInstaller
 * Coded with Python 2.7
+* ESR can be calculated by the following: ESR = Nominal_Voltage/Stall_Current
+* Todo: add stall current as an alternative to ESR
